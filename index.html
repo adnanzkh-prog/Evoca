@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evoca Drinks | Premium Soft Drinks Made with Natural Mineral Water</title>
+    <meta name="description" content="Evoca Drinks - Premium orange, strawberry, mango and cola soft drinks made with 100% natural mineral water. Available nationwide through our trusted distributors.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --evoca-red: #E53935;
+            --evoca-dark: #0a0a0a;
+            --evoca-gold: #FFD700;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .font-serif { font-family: 'Playfair Display', serif; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: var(--evoca-red); border-radius: 4px; }
+        
+        /* Liquid Animation Background */
+        .liquid-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            background: radial-gradient(circle at 30% 30%, rgba(229, 57, 53, 0.3), rgba(229, 57, 53, 0.05));
+            border-radius: 50%;
+            animation: rise 12s infinite ease-in;
+        }
+        
+        @keyframes rise {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            10% { opacity: 1; }
+            100% { transform: translateY(-120vh) scale(0.3); opacity: 0; }
+        }
+        
+        /* Can Animations */
+        .can-float {
+            animation: canFloat 6s ease-in-out infinite;
+        }
+        
+        @keyframes canFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+        
+        .can-float-delayed {
+            animation: canFloat 6s ease-in-out infinite;
+            animation-delay: 1s;
+        }
+        
+        .can-float-slow {
+            animation: canFloat 8s ease-in-out infinite;
+            animation-delay: 0.5s;
+        }
+        
+        .can-3d {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: drop-shadow(0 25px 50px rgba(0,0,0,0.5));
+        }
+        
+        .can-3d:hover {
+            transform: perspective(1000px) rotateY(15deg) rotateX(5deg) scale(1.1);
+        }
+        
+        /* Product Card Effects */
+        .product-card {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-15px);
+            border-color: rgba(229, 57, 53, 0.5);
+            box-shadow: 0 30px 60px rgba(229, 57, 53, 0.2);
+        }
+        
+        .product-card:hover .can-3d {
+            transform: scale(1.15) rotate(5deg);
+        }
+        
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #E53935 0%, #FF6B6B 50%, #E53935 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Magnetic Button */
+        .magnetic-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .magnetic-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+        
+        .magnetic-btn:hover::before {
+            left: 100%;
+        }
+        
+        /* Glow Effects */
+        .glow-red {
+            box-shadow: 0 0 60px rgba(229, 57, 53, 0.4);
+        }
+        
+        .glow-orange {
+            box-shadow: 0 0 60px rgba(255, 152, 0, 0.4);
+        }
+        
+        .glow-mango {
+            box-shadow: 0 0 60px rgba(255, 193, 7, 0.4);
+        }
+        
+        .glow-cola {
+            box-shadow: 0 0 60px rgba(33, 150, 243, 0.4);
+        }
+        
+        /* Loading Screen */
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: #0a0a0a;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+        
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .loader-can {
+            width: 80px;
+            height: 140px;
+            background: linear-gradient(180deg, #E53935 0%, #B71C1C 100%);
+            border-radius: 40px 40px 20px 20px;
+            position: relative;
+            animation: fillCan 2s infinite;
+            box-shadow: 0 20px 40px rgba(229, 57, 53, 0.4);
+        }
+        
+        .loader-can::before {
+            content: 'EVOCA';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-90deg);
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+        
+        @keyframes fillCan {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Distributor Cards */
+        .distributor-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .distributor-card:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(229, 57, 53, 0.3);
+            transform: translateX(10px);
+        }
+        
+        /* Parallax */
+        .parallax-wrapper {
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Text Reveal */
+        .reveal-text {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        }
+        
+        /* Navigation */
+        .nav-scrolled {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        /* Taste Challenge Badge */
+        .taste-badge {
+            background: linear-gradient(135deg, #E53935, #FF6B6B);
+            box-shadow: 0 10px 30px rgba(229, 57, 53, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div class="loader" id="loader">
+        <div class="text-center">
+            <div class="loader-can mx-auto mb-4"></div>
+            <p class="text-gray-400 text-sm tracking-widest uppercase">Loading Evoca</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 transition-all duration-500 py-6" id="navbar">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-center">
+                <a href="#" class="flex items-center group">
+                    <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-red-700 rounded-xl flex items-center justify-center mr-3 shadow-lg group-hover:shadow-red-500/50 transition-shadow">
+                        <span class="text-white font-bold text-2xl font-serif">E</span>
+                    </div>
+                    <div>
+                        <span class="text-3xl font-serif font-bold tracking-tight">EVOCA</span>
+                        <span class="hidden sm:inline-block text-xs text-gray-400 ml-2 tracking-widest uppercase">Premium Drinks</span>
+                    </div>
+                </a>
+                
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#collection" class="text-sm uppercase tracking-widest hover:text-red-500 transition-colors font-medium">Collection</a>
+                    <a href="#taste-challenge" class="text-sm uppercase tracking-widest hover:text-red-500 transition-colors font-medium">Taste Challenge</a>
+                    <a href="#distributors" class="text-sm uppercase tracking-widest hover:text-red-500 transition-colors font-medium">Distributors</a>
+                    <a href="#about" class="text-sm uppercase tracking-widest hover:text-red-500 transition-colors font-medium">Our Story</a>
+                    <button class="magnetic-btn bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-3 rounded-full font-semibold text-sm uppercase tracking-wider shadow-lg hover:shadow-red-500/30">
+                        Trade Portal
+                    </button>
+                </div>
+                
+                <button class="md:hidden text-white" onclick="toggleMenu()">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="hidden md:hidden bg-black/95 backdrop-blur-xl absolute w-full border-t border-white/10 mt-6" id="mobileMenu">
+            <div class="flex flex-col p-6 space-y-4">
+                <a href="#collection" class="text-lg uppercase tracking-widest hover:text-red-500">Collection</a>
+                <a href="#taste-challenge" class="text-lg uppercase tracking-widest hover:text-red-500">Taste Challenge</a>
+                <a href="#distributors" class="text-lg uppercase tracking-widest hover:text-red-500">Distributors</a>
+                <a href="#about" class="text-lg uppercase tracking-widest hover:text-red-500">Our Story</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+        <div class="liquid-bg" id="bubbles"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black z-10"></div>
+        
+        <div class="relative z-20 max-w-7xl mx-auto px-6 w-full">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="text-center lg:text-left">
+                    <div class="inline-flex items-center bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-2 rounded-full text-sm font-semibold mb-6 reveal-text">
+                        <i data-lucide="sparkles" class="w-4 h-4 mr-2"></i>
+                        100% Natural Mineral Water
+                    </div>
+                    
+                    <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-none reveal-text">
+                        Taste the<br>
+                        <span class="gradient-text italic">Real</span> Thing
+                    </h1>
+                    
+                    <p class="text-gray-400 text-lg md:text-xl max-w-lg mx-auto lg:mx-0 mb-10 leading-relaxed reveal-text">
+                        Premium soft drinks crafted with natural mineral water. Four bold flavors. One unforgettable taste experience.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start reveal-text">
+                        <button onclick="scrollToSection('collection')" class="magnetic-btn bg-white text-black px-8 py-4 rounded-full font-bold uppercase tracking-wider hover:bg-gray-100 transition-all shadow-xl flex items-center justify-center">
+                            Explore Flavors
+                            <i data-lucide="arrow-down" class="w-5 h-5 ml-2"></i>
+                        </button>
+                        <button onclick="scrollToSection('distributors')" class="magnetic-btn border-2 border-white/30 text-white px-8 py-4 rounded-full font-bold uppercase tracking-wider hover:bg-white/10 transition-all backdrop-blur-sm flex items-center justify-center">
+                            Find Near You
+                        </button>
+                    </div>
+                    
+                    <div class="mt-12 flex items-center justify-center lg:justify-start space-x-8 text-gray-500 reveal-text">
+                        <div class="text-center">
+                            <p class="text-3xl font-bold text-white">4</p>
+                            <p class="text-xs uppercase tracking-wider mt-1">Flavors</p>
+                        </div>
+                        <div class="w-px h-12 bg-white/10"></div>
+                        <div class="text-center">
+                            <p class="text-3xl font-bold text-white">0%</p>
+                            <p class="text-xs uppercase tracking-wider mt-1">Artificial</p>
+                        </div>
+                        <div class="w-px h-12 bg-white/10"></div>
+                        <div class="text-center">
+                            <p class="text-3xl font-bold text-white">100%</p>
+                            <p class="text-xs uppercase tracking-wider mt-1">Natural</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hero Product Display -->
+                <div class="relative h-[500px] lg:h-[600px] flex items-center justify-center">
+                    <div class="absolute w-[500px] h-[500px] bg-red-500/20 rounded-full blur-[100px] animate-pulse"></div>
+                    
+                    <!-- Main Hero Can -->
+                    <img src="sandbox:///mnt/kimi/upload/can-mango.png" alt="Evoca Mango" class="relative z-10 h-[400px] lg:h-[500px] can-3d can-float drop-shadow-2xl">
+                    
+                    <!-- Floating Side Cans -->
+                    <img src="sandbox:///mnt/kimi/upload/can-orange.png" alt="Evoca Orange" class="absolute left-0 top-20 h-[200px] can-float-delayed opacity-80 blur-[1px]">
+                    <img src="sandbox:///mnt/kimi/upload/can-str.png" alt="Evoca Strawberry" class="absolute right-0 bottom-20 h-[180px] can-float-slow opacity-80 blur-[1px]">
+                    
+                    <!-- Badge -->
+                    <div class="absolute -bottom-4 left-1/2 transform -translate-x-1/2 taste-badge text-white px-6 py-3 rounded-full font-bold text-sm uppercase tracking-wider flex items-center">
+                        <i data-lucide="award" class="w-5 h-5 mr-2"></i>
+                        Take the Taste Challenge
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 animate-bounce">
+            <div class="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center pt-2">
+                <div class="w-1 h-2 bg-red-500 rounded-full"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Collection Section -->
+    <section id="collection" class="py-32 relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20">
+                <span class="text-red-500 text-sm uppercase tracking-[0.3em] font-semibold">The Collection</span>
+                <h2 class="font-serif text-5xl md:text-6xl font-bold mt-4 mb-6">Four Bold Flavors</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto text-lg">Each can is crafted with 100% natural mineral water and the finest ingredients. No compromises. Just pure refreshment.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Orange -->
+                <div class="product-card rounded-3xl p-8 text-center group cursor-pointer">
+                    <div class="relative h-80 mb-6 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-b from-orange-500/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <img src="sandbox:///mnt/kimi/upload/can-orange.png" alt="Evoca Orange" class="h-full object-contain can-3d relative z-10">
+                    </div>
+                    <div class="w-12 h-1 bg-orange-500 mx-auto mb-4 rounded-full"></div>
+                    <h3 class="font-serif text-2xl font-bold mb-2">Orange</h3>
+                    <p class="text-gray-400 text-sm mb-4">Zesty citrus burst with natural orange extracts</p>
+                    <div class="flex justify-center items-center space-x-2 text-orange-400">
+                        <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
+                        <span class="text-xs uppercase tracking-wider font-semibold">Citrus</span>
+                        <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
+                        <span class="text-xs uppercase tracking-wider font-semibold">Fresh</span>
+                    </div>
+                </div>
+
+                <!-- Strawberry -->
+                <div class="product-card rounded-3xl p-8 text-center group cursor-pointer">
+                    <div class="relative h-80 mb-6 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-b from-red-500/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <img src="sandbox:///mnt/kimi/upload/can-str.png" alt="Evoca Strawberry" class="h-full object-contain can-3d relative z-10">
+                    </div>
+                    <div class="w-12 h-1 bg-red-500 mx-auto mb-4 rounded-full"></div>
+                    <h3 class="font-serif text-2xl font-bold mb-2">Strawberry</h3>
+                    <p class="text-gray-400 text-sm mb-4">Sweet berry notes with a crisp, clean finish</p>
+                    <div class="flex justify-center items-center space-x-2 text-red-400">
+                        <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+                        <span class="text-xs uppercase tracking-wider font-semibold">Sweet</span>
+                        <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+                        <span class="text-xs uppercase tracking-wider font-semibold">Berry</span>
+                    </div>
+                </div>
+
+                <!-- Mango -->
+                <div class="product-card rounded-3xl p-8 text-center group cursor-pointer">
+                    <div class="relative h-80 mb-6 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-b from-yellow-500/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <img src="sandbox:///mnt/kimi/upload/can-mango.png" alt="Evoca Mango" class="h-full object-contain can-3d relative z-10">
+                    </div>
+                    <div class="w-12 h-1 bg-yellow-500 mx-auto mb-4 rounded-full"></div>
+                    <h3 class="font-serif text-2xl font-bold mb-2">Mango</h3>
+                    <p class="text-gray-400 text-sm mb-4">Tropical paradise in every sip</p>
+                    <div class="flex justify-center items-center space-x-2 text-yellow-400">
+                        <span class="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                        <span class="text-xs uppercase tracking-wider font-semibold">Tropical</span>
+                        <span class="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                        <span class="text-xs uppercase tracking-wider font-semibold">Exotic</span>
+                    </div>
+                </div>
+
+                <!-- Cola -->
+                <div class="product-card rounded-3xl p-8 text-center group cursor-pointer">
+                    <div class="relative h-80 mb-6 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-b from-blue-500/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <img src="sandbox:///mnt/kimi/upload/can-cola.png" alt="Evoca Cola" class="h-full object-contain can-3d relative z-10">
+                    </div>
+                    <div class="w-12 h-1 bg-blue-500 mx-auto mb-4 rounded-full"></div>
+                    <h3 class="font-serif text-2xl font-bold mb-2">Cola</h3>
+                    <p class="text-gray-400 text-sm mb-4">Classic taste with a modern mineral water twist</p>
+                    <div class="flex justify-center items-center space-x-2 text-blue-400">
+                        <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                        <span class="text-xs uppercase tracking-wider font-semibold">Classic</span>
+                        <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                        <span class="text-xs uppercase tracking-wider font-semibold">Bold</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Taste Challenge Section -->
+    <section id="taste-challenge" class="py-32 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23E53935\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+        
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <div class="inline-block taste-badge text-white px-6 py-3 rounded-full font-bold text-sm uppercase tracking-wider mb-8">
+                        <i data-lucide="flame" class="w-5 h-5 inline mr-2"></i>
+                        The Challenge
+                    </div>
+                    
+                    <h2 class="font-serif text-5xl md:text-6xl font-bold mb-6 leading-tight">
+                        Take the Evoca<br>
+                        <span class="gradient-text">Taste Challenge</span>
+                    </h2>
+                    
+                    <p class="text-gray-400 text-lg mb-8 leading-relaxed">
+                        We believe once you taste Evoca, you'll never go back. Our unique blend of natural mineral water and premium flavors creates a drinking experience that's simply unmatched.
+                    </p>
+                    
+                    <div class="space-y-6 mb-10">
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                <span class="text-red-500 font-bold text-xl">1</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg mb-1">Try Evoca Cold</h4>
+                                <p class="text-gray-500 text-sm">Chill your can to perfection (2-4°C)</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                <span class="text-red-500 font-bold text-xl">2</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg mb-1">Taste the Difference</h4>
+                                <p class="text-gray-500 text-sm">Notice the crisp, clean mineral water base</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                <span class="text-red-500 font-bold text-xl">3</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg mb-1">Compare & Share</h4>
+                                <p class="text-gray-500 text-sm">Side-by-side with your regular drink</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="magnetic-btn bg-white text-black px-8 py-4 rounded-full font-bold uppercase tracking-wider hover:bg-gray-100 transition-all shadow-xl">
+                        Find Your Nearest Stockist
+                    </button>
+                </div>
+                
+                <div class="relative">
+                    <img src="sandbox:///mnt/kimi/upload/cans.png" alt="Evoca Taste Challenge - Full Range" class="w-full rounded-3xl shadow-2xl border border-white/10">
+                    
+                    <div class="absolute -bottom-6 -left-6 bg-red-600 text-white p-6 rounded-2xl shadow-xl">
+                        <p class="font-bold text-3xl">Join</p>
+                        <p class="text-red-200">#EvocaTasteChallenge</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-32 relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="order-2 lg:order-1 relative">
+                    <div class="absolute -inset-4 bg-gradient-to-r from-red-600/20 to-orange-600/20 rounded-3xl blur-2xl"></div>
+                    <div class="relative bg-gray-900/50 backdrop-blur-sm border border-white/10 rounded-3xl p-8">
+                        <img src="sandbox:///mnt/kimi/upload/can-mango.png" alt="Evoca Quality" class="w-48 mx-auto mb-6 can-float">
+                        <div class="grid grid-cols-2 gap-6 text-center">
+                            <div class="p-4 bg-white/5 rounded-2xl">
+                                <p class="text-3xl font-bold text-red-500">100%</p>
+                                <p class="text-xs text-gray-400 uppercase tracking-wider mt-1">Natural Mineral Water</p>
+                            </div>
+                            <div class="p-4 bg-white/5 rounded-2xl">
+                                <p class="text-3xl font-bold text-red-500">0%</p>
+                                <p class="text-xs text-gray-400 uppercase tracking-wider mt-1">Artificial Colors</p>
+                            </div>
+                            <div class="p-4 bg-white/5 rounded-2xl">
+                                <p class="text-3xl font-bold text-red-500">GB</p>
+                                <p class="text-xs text-gray-400 uppercase tracking-wider mt-1">Made in Britain</p>
+                            </div>
+                            <div class="p-4 bg-white/5 rounded-2xl">
+                                <p class="text-3xl font-bold text-red-500">330ml</p>
+                                <p class="text-xs text-gray-400 uppercase tracking-wider mt-1">Perfect Serve</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="order-1 lg:order-2">
+                    <span class="text-red-500 text-sm uppercase tracking-[0.3em] font-semibold">Our Promise</span>
+                    <h2 class="font-serif text-5xl md:text-6xl font-bold mt-4 mb-6 leading-tight">
+                        Quality in Every<br>
+                        <span class="italic text-gray-400">Single Sip</span>
+                    </h2>
+                    
+                    <div class="space-y-6 text-gray-400 text-lg leading-relaxed">
+                        <p>Evoca isn't just another soft drink. We start with 100% natural mineral water sourced from protected springs, then carefully blend in our signature flavors.</p>
+                        <p>No artificial colors. No compromise. Just pure, refreshing taste that stands out from the crowd.</p>
+                    </div>
+                    
+                    <div class="mt-10 flex items-center space-x-6">
+                        <div class="flex -space-x-4">
+                            <div class="w-12 h-12 bg-orange-500 rounded-full border-2 border-black flex items-center justify-center text-xs font-bold">O</div>
+                            <div class="w-12 h-12 bg-red-500 rounded-full border-2 border-black flex items-center justify-center text-xs font-bold">S</div>
+                            <div class="w-12 h-12 bg-yellow-500 rounded-full border-2 border-black flex items-center justify-center text-xs font-bold">M</div>
+                            <div class="w-12 h-12 bg-blue-500 rounded-full border-2 border-black flex items-center justify-center text-xs font-bold">C</div>
+                        </div>
+                        <p class="text-sm text-gray-500">Four flavors.<br>One standard.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Distributors Section -->
+    <section id="distributors" class="py-32 bg-gray-900/50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="text-red-500 text-sm uppercase tracking-[0.3em] font-semibold">Nationwide Network</span>
+                <h2 class="font-serif text-5xl md:text-6xl font-bold mt-4 mb-6">Find Evoca Near You</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Available through our trusted distributor network across the UK. From cash & carries to foodservice specialists.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="distributor-card rounded-2xl p-6 cursor-pointer">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="font-bold text-lg text-white">Adam's Cash & Carry</h3>
+                            <p class="text-red-400 text-sm">East Midlands</p>
+                        </div>
+                        <span class="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded-full">Active</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Peterborough • 01733 266 666</p>
+                    <a href="https://isaacwholesale.co.uk" target="_blank" class="text-sm text-red-400 hover:text-red-300 flex items-center">
+                        isaacwholesale.co.uk <i data-lucide="external-link" class="w-3 h-3 ml-1"></i>
+                    </a>
+                </div>
+
+                <div class="distributor-card rounded-2xl p-6 cursor-pointer">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="font-bold text-lg text-white">Indus Foods Ltd</h3>
+                            <p class="text-red-400 text-sm">West Midlands</p>
+                        </div>
+                        <span class="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-1 rounded-full">New Site</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Birmingham • 0121 771 4330</p>
+                    <span class="text-xs text-gray-500">Family owned since 1962</span>
+                </div>
+
+                <div class="distributor-card rounded-2xl p-6 cursor-pointer">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="font-bold text-lg text-white">Magna Foodservice</h3>
+                            <p class="text-red-400 text-sm">Midlands & South</p>
+                        </div>
+                        <span class="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded-full">Active</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">London • 020 8050 1231</p>
+                    <a href="https://www.magnafoodservice.co.uk" target="_blank" class="text-sm text-red-400 hover:text-red-300 flex items-center">
+                        magnafoodservice.co.uk <i data-lucide="external-link" class="w-3 h-3 ml-1"></i>
+                    </a>
+                </div>
+
+                <div class="distributor-card rounded-2xl p-6 cursor-pointer">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="font-bold text-lg text-white">Rahims</h3>
+                            <p class="text-red-400 text-sm">South</p>
+                        </div>
+                        <span class="bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded-full">Upgrade</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">London • 020 3522 2850</p>
+                    <a href="http://www.rahims.net" target="_blank" class="text-sm text-red-400 hover:text-red-300 flex items-center">
+                        rahims.net <i data-lucide="external-link" class="w-3 h-3 ml-1"></i>
+                    </a>
+                </div>
+
+                <div class="distributor-card rounded-2xl p-6 cursor-pointer">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="font-bold text-lg text-white">Supreme Wholesale</h3>
+                            <p class="text-red-400 text-sm">East London</p>
+                        </div>
+                        <span class="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded-full">Active</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">London • 020 7474 6090</p>
+                    <a href="https://supremewholesale.co.uk" target="_blank" class="text-sm text-red-400 hover:text-red-300 flex items-center">
+                        supremewholesale.co.uk <i data-lucide="external-link" class="w-3 h-3 ml-1"></i>
+                    </a>
+                </div>
+
+                <div class="distributor-card rounded-2xl p-6 cursor-pointer">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="font-bold text-lg text-white">Z and H Distribution</h3>
+                            <p class="text-red-400 text-sm">West London</p>
+                        </div>
+                        <span class="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded-full">Active</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Southall • 020 8561 3213</p>
+                    <a href="https://zandh.co.uk" target="_blank" class="text-sm text-red-400 hover:text-red-300 flex items-center">
+                        zandh.co.uk <i data-lucide="external-link" class="w-3 h-3 ml-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-12 text-center">
+                <div class="inline-flex items-center bg-white/5 border border-white/10 rounded-2xl p-6">
+                    <div class="mr-6">
+                        <p class="font-bold text-lg">Become a Distributor</p>
+                        <p class="text-gray-400 text-sm">Join our growing network</p>
+                    </div>
+                    <button class="bg-red-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-red-700 transition-colors">
+                        Apply Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-white/10 py-16">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-12 mb-12">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-red-700 rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-white font-bold text-xl font-serif">E</span>
+                        </div>
+                        <span class="text-2xl font-serif font-bold">EVOCA</span>
+                    </div>
+                    <p class="text-gray-500 text-sm leading-relaxed mb-4">Premium soft drinks made with 100% natural mineral water. Taste the difference.</p>
+                    <div class="flex space-x-3">
+                        <a href="#" class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center hover:bg-red-600 transition-colors">
+                            <i data-lucide="facebook" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center hover:bg-red-600 transition-colors">
+                            <i data-lucide="instagram" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center hover:bg-red-600 transition-colors">
+                            <i data-lucide="twitter" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold uppercase tracking-wider mb-4 text-sm">Products</h4>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li><a href="#" class="hover:text-white transition-colors">Orange</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Strawberry</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Mango</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Cola</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold uppercase tracking-wider mb-4 text-sm">Trade</h4>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li><a href="#" class="hover:text-white transition-colors">Become a Stockist</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Distributor Login</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Marketing Materials</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Price Lists</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold uppercase tracking-wider mb-4 text-sm">Contact</h4>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li>hello@evocadrinks.com</li>
+                        <li>+44 (0) 20 XXXX XXXX</li>
+                        <li class="pt-2">The Premium Soft Drinks Company</li>
+                        <li>United Kingdom</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-600">
+                <p>&copy; 2025 Evoca Drinks. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                    <a href="#" class="hover:text-white transition-colors">Cookie Settings</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Remove loader
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+            }, 2000);
+        });
+
+        // Create bubbles
+        function createBubbles() {
+            const container = document.getElementById('bubbles');
+            for (let i = 0; i < 15; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                const size = Math.random() * 80 + 20;
+                bubble.style.width = size + 'px';
+                bubble.style.height = size + 'px';
+                bubble.style.left = Math.random() * 100 + '%';
+                bubble.style.animationDelay = Math.random() * 12 + 's';
+                bubble.style.animationDuration = (Math.random() * 8 + 10) + 's';
+                container.appendChild(bubble);
+            }
+        }
+        createBubbles();
+
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero animations
+        gsap.from('.reveal-text', {
+            y: 100,
+            opacity: 0,
+            duration: 1.2,
+            stagger: 0.2,
+            ease: 'power4.out',
+            delay: 0.5
+        });
+
+        // Scroll reveals
+        gsap.utils.toArray('.product-card').forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%',
+                },
+                y: 60,
+                opacity: 0,
+                duration: 0.8,
+                delay: i * 0.1,
+                ease: 'power3.out'
+            });
+        });
+
+        gsap.utils.toArray('.distributor-card').forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 90%',
+                },
+                x: -30,
+                opacity: 0,
+                duration: 0.6,
+                delay: i * 0.1,
+                ease: 'power3.out'
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('nav-scrolled');
+                navbar.classList.remove('py-6');
+                navbar.classList.add('py-4');
+            } else {
+                navbar.classList.remove('nav-scrolled');
+                navbar.classList.remove('py-4');
+                navbar.classList.add('py-6');
+            }
+        });
+
+        // Mobile menu toggle
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Smooth scroll
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
